@@ -3,6 +3,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 
+# ponytail: 6-line .env loader (cwd only) instead of a python-dotenv dep
+if Path(".env").exists():
+    for _line in Path(".env").read_text().splitlines():
+        _line = _line.strip()
+        if _line and not _line.startswith("#") and "=" in _line:
+            _k, _, _v = _line.partition("=")
+            os.environ.setdefault(_k.strip(), _v.strip().strip('"'))
+
+
 def _env(key: str, default: str) -> str:
     return os.environ.get(f"MEGATRON_{key}", default)
 
